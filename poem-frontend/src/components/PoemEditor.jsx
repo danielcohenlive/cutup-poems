@@ -2,15 +2,64 @@
 import { DndContext } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
 import { nanoid } from "nanoid";
+import { useState } from "react";
 import TextUploader from "./TextUploader";
 import WordBoard from "./WordBoard";
 import PoemCanvas from "./PoemCanvas";
 
 function PoemEditor({ poem, onUpdatePoem }) {
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [tempTitle, setTempTitle] = useState(poem?.name || "");
+  if (!poem) {
+    return <h1>Select a poem to edit</h1>;
+  }
+  function handleTitleClick() {
+    setIsEditingTitle(true);
+    setTempTitle(poem.name);
+  }
+
+  function handleTitleChange(e) {
+    setTempTitle(e.target.value);
+  }
+
+  function handleTitleBlur() {
+    saveTitle();
+  }
+
+  function handleTitleKeyDown(e) {
+    if (e.key === "Enter") {
+      saveTitle();
+    }
+    if (e.key === "Escape") {
+      cancelEdit();
+    }
+  }
+
+  function saveTitle() {
+    setIsEditingTitle(false);
+    if (tempTitle.trim() && tempTitle !== poem.name) {
+      const updatedPoem = {
+        ...poem,
+        name: tempTitle.trim(),
+        updated_at: new Date().toISOString(),
+      };
+      onUpdatePoem(updatedPoem);
+    }
+  }
+
+  function cancelEdit() {
+    setIsEditingTitle(false);
+    setTempTitle(poem.name);
+  }
+
   function handleWordsGenerated(newWords) {
     const updatedAvailableWords = [
       ...poem.available_words,
-      ...newWords.map((word) => ({ id: nanoid(), text: word })),
+      ...newWords.map((word) => ({
+        id: nanoid(),
+        text: word,
+        kind: "available",
+      })),
     ];
 
     onUpdatePoem({
@@ -32,7 +81,7 @@ function PoemEditor({ poem, onUpdatePoem }) {
       onUpdatePoem({
         ...poem,
         available_words: poem.available_words.filter((_, idx) => idx !== index),
-        words: [...poem.words, { id: nanoid(), text: word.text }],
+        words: [...poem.words, { id: nanoid(), text: word.text, kind: "poem" }],
         updated_at: new Date().toISOString(),
       });
     } else if (
@@ -54,25 +103,46 @@ function PoemEditor({ poem, onUpdatePoem }) {
   }
 
   return (
-    <>
-      {poem ? (
-        <DndContext onDragEnd={handleDragEnd}>
-          <div style={{ padding: "2rem" }}>
-            <h1>Cutup Poetry Maker</h1>
+    <DndContext onDragEnd={handleDragEnd}>
+      <div style={{ padding: "2rem" }}>
+        {isEditingTitle ? (
+          <input
+            type="text"
+            value={tempTitle}
+            onChange={handleTitleChange}
+            onBlur={handleTitleBlur}
+            onKeyDown={handleTitleKeyDown}
+            autoFocus
+            style={{
+              fontSize: "2rem",
+              fontWeight: "bold",
+              width: "100%",
+              marginBottom: "1rem",
+            }}
+          />
+        ) : (
+          <h1
+            onClick={handleTitleClick}
+            style={{
+              cursor: "pointer",
+              fontSize: "2rem",
+              marginBottom: "1rem",
+            }}
+            title="Click to rename poem"
+          >
+            {poem.name}
+          </h1>
+        )}
 
-            <TextUploader onWordsGenerated={handleWordsGenerated} />
+        <TextUploader onWordsGenerated={handleWordsGenerated} />
 
-            <h2>Word Bank</h2>
-            <WordBoard words={poem.available_words} />
+        <h2>Word Bank</h2>
+        <WordBoard words={poem.available_words} />
 
-            <h2>Your Poem</h2>
-            <PoemCanvas poemWords={poem.words} />
-          </div>
-        </DndContext>
-      ) : (
-        <h1>Select a poem to edit</h1>
-      )}
-    </>
+        <h2>Your Poem</h2>
+        <PoemCanvas poemWords={poem.words} />
+      </div>
+    </DndContext>
   );
 }
 
