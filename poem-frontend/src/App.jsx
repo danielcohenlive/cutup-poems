@@ -1,16 +1,23 @@
 // src/App.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
+import { fetchPoems, fetchPoem, createPoem, updatePoem } from "./api/poems";
 import PoemList from "./components/PoemList";
 import PoemEditor from "./components/PoemEditor";
 
 function App() {
   const [poems, setPoems] = useState([]);
-  const [activePoemId, setActivePoemId] = useState(null);
+  const [activePoem, setActivePoem] = useState(null);
 
-  const activePoem = poems.find((p) => p.id === activePoemId);
+  useEffect(() => {
+    async function loadPoems() {
+      const data = await fetchPoems();
+      setPoems(data);
+    }
+    loadPoems();
+  }, []);
 
-  function handleNewPoem() {
+  async function handleNewPoem() {
     const id = nanoid();
     const now = new Date().toISOString();
     const newPoem = {
@@ -21,17 +28,29 @@ function App() {
       available_words: [],
       words: [],
     };
+    const savedPoem = await createPoem(newPoem);
     setPoems((prev) => [...prev, newPoem]);
-    setActivePoemId(id);
+    setActivePoem(savedPoem);
   }
 
-  function handleSelectPoem(id) {
-    setActivePoemId(id);
+  async function handleSelectPoem(id) {
+    const poem = await fetchPoem(id);
+    setActivePoem(poem);
   }
 
-  function handleUpdatePoem(updatedPoem) {
-    setPoems((prevPoems) =>
-      prevPoems.map((poem) => (poem.id === updatedPoem.id ? updatedPoem : poem))
+  async function handleUpdatePoem(updatedPoem) {
+    await updatePoem(updatedPoem.id, updatedPoem);
+    setActivePoem(updatedPoem);
+    setPoems((prev) =>
+      prev.map((poem) =>
+        poem.id === updatedPoem.id
+          ? {
+              ...poem,
+              name: updatedPoem.name,
+              updated_at: updatedPoem.updated_at,
+            }
+          : poem
+      )
     );
   }
 
@@ -39,7 +58,7 @@ function App() {
     <div style={{ display: "flex" }}>
       <PoemList
         poems={poems}
-        activePoemId={activePoemId}
+        activePoemId={activePoem?.id}
         onSelectPoem={handleSelectPoem}
         onNewPoem={handleNewPoem}
       />
