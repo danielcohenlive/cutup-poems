@@ -69,13 +69,15 @@ def update_poem(poem_id: str, updated_poem: PoemOut):
         poem.updated_at = updated_poem.updated_at
 
         session.exec(delete(Word).where(Word.poem_id == poem_id))
-        for word in updated_poem.available_words + updated_poem.words:
-            session.add(Word(
+        session.bulk_save_objects([
+            Word(
                 id=word.id,
                 text=word.text,
                 kind=word.kind,
                 poem_id=poem_id,
-            ))
+            )
+            for word in updated_poem.available_words + updated_poem.words
+        ])
         session.commit()
 
         return updated_poem
