@@ -1,27 +1,22 @@
+# backend/main.py
 from fastapi import FastAPI
-from pydantic import BaseModel
+from database import create_db_and_tables
+from routes.poems import router as poems_router
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+@app.on_event("startup")
+def on_startup():
+    create_db_and_tables()
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+# Add CORS if you call from React
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-@app.get("/items/{item_id}")
-async def read_item(item_id: int):
-    return {"item_id": item_id}
-
-class Item(BaseModel):
-    name: str
-    description: str | None = None
-    price: float
-    tax: float | None = None
-
-
-app = FastAPI()
-
-
-@app.post("/items/")
-async def create_item(item: Item):
-    return item
+app.include_router(poems_router)
