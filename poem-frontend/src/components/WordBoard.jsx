@@ -24,13 +24,20 @@ function DraggableWord({ word, id }) {
 }
 
 function WordBoard({ words }) {
-    return (
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "2rem" }}>
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexWrap: "wrap",
+        gap: "8px",
+        marginBottom: "2rem",
+      }}
+    >
       {words.map((word, index) => (
-        <DraggableWord key={index} id={`word-${index}`} word={word} />
+        <DraggableWord key={index} id={`word-${index}`} word={word.text} />
       ))}
     </div>
-    );
-  }
-  
-  export default WordBoard;
+  );
+}
+
+export default WordBoard;
