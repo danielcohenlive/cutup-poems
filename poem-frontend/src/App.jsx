@@ -1,13 +1,14 @@
 // src/App.jsx
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+
 import { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
-import { fetchPoems, fetchPoem, createPoem, updatePoem } from "./api/poems";
+import { fetchPoems, createPoem } from "./api/poems";
 import PoemList from "./components/PoemList";
-import PoemEditor from "./components/PoemEditor";
+import PoemEditorWrapper from "./components/PoemEditorWrapper";
 
 function App() {
   const [poems, setPoems] = useState([]);
-  const [activePoem, setActivePoem] = useState(null);
 
   useEffect(() => {
     async function loadPoems() {
@@ -29,43 +30,21 @@ function App() {
       words: [],
     };
     const savedPoem = await createPoem(newPoem);
-    setPoems((prev) => [...prev, newPoem]);
-    setActivePoem(savedPoem);
-  }
-
-  async function handleSelectPoem(id) {
-    const poem = await fetchPoem(id);
-    setActivePoem(poem);
-  }
-
-  async function handleUpdatePoem(updatedPoem) {
-    await updatePoem(updatedPoem.id, updatedPoem);
-    setActivePoem(updatedPoem);
-    setPoems((prev) =>
-      prev.map((poem) =>
-        poem.id === updatedPoem.id
-          ? {
-              ...poem,
-              name: updatedPoem.name,
-              updated_at: updatedPoem.updated_at,
-            }
-          : poem
-      )
-    );
+    setPoems((prev) => [...prev, savedPoem]);
   }
 
   return (
-    <div style={{ display: "flex" }}>
-      <PoemList
-        poems={poems}
-        activePoemId={activePoem?.id}
-        onSelectPoem={handleSelectPoem}
-        onNewPoem={handleNewPoem}
-      />
-      <div style={{ flex: 1 }}>
-        <PoemEditor poem={activePoem} onUpdatePoem={handleUpdatePoem} />
+    <Router>
+      <div style={{ display: "flex" }}>
+        <PoemList poems={poems} onNewPoem={handleNewPoem} />
+        <div style={{ flex: 1, padding: "2rem" }}>
+          <Routes>
+            <Route path="/poems/:poemId" element={<PoemEditorWrapper />} />
+            <Route path="/" element={<h1>Select a poem to edit</h1>} />
+          </Routes>
+        </div>
       </div>
-    </div>
+    </Router>
   );
 }
 

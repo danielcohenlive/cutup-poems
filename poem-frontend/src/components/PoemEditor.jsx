@@ -10,9 +10,6 @@ import PoemCanvas from "./PoemCanvas";
 function PoemEditor({ poem, onUpdatePoem }) {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [tempTitle, setTempTitle] = useState(poem?.name || "");
-  if (!poem) {
-    return <h1>Select a poem to edit</h1>;
-  }
   function handleTitleClick() {
     setIsEditingTitle(true);
     setTempTitle(poem.name);
@@ -121,44 +118,42 @@ function PoemEditor({ poem, onUpdatePoem }) {
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div style={{ padding: "2rem" }}>
-        {isEditingTitle ? (
-          <input
-            type="text"
-            value={tempTitle}
-            onChange={handleTitleChange}
-            onBlur={handleTitleBlur}
-            onKeyDown={handleTitleKeyDown}
-            autoFocus
-            style={{
-              fontSize: "2rem",
-              fontWeight: "bold",
-              width: "100%",
-              marginBottom: "1rem",
-            }}
-          />
-        ) : (
-          <h1
-            onClick={handleTitleClick}
-            style={{
-              cursor: "pointer",
-              fontSize: "2rem",
-              marginBottom: "1rem",
-            }}
-            title="Click to rename poem"
-          >
-            {poem.name}
-          </h1>
-        )}
+      {isEditingTitle ? (
+        <input
+          type="text"
+          value={tempTitle}
+          onChange={handleTitleChange}
+          onBlur={handleTitleBlur}
+          onKeyDown={handleTitleKeyDown}
+          autoFocus
+          style={{
+            fontSize: "2rem",
+            fontWeight: "bold",
+            width: "100%",
+            marginBottom: "1rem",
+          }}
+        />
+      ) : (
+        <h1
+          onClick={handleTitleClick}
+          style={{
+            cursor: "pointer",
+            fontSize: "2rem",
+            marginBottom: "1rem",
+          }}
+          title="Click to rename poem"
+        >
+          {poem.name}
+        </h1>
+      )}
 
-        <TextUploader onWordsGenerated={handleWordsGenerated} />
+      <TextUploader onWordsGenerated={handleWordsGenerated} />
 
-        <h2>Word Bank</h2>
-        <WordBoard words={poem.available_words} />
+      <h2>Word Bank</h2>
+      <WordBoard words={poem.available_words} />
 
-        <h2>Your Poem</h2>
-        <PoemCanvas poemWords={poem.words} />
-      </div>
+      <h2>Your Poem</h2>
+      <PoemCanvas poemWords={poem.words} />
     </DndContext>
   );
 }

@@ -1,4 +1,11 @@
-function PoemList({ poems, activePoemId, onSelectPoem, onNewPoem }) {
+import { useNavigate, useLocation } from "react-router-dom";
+
+function PoemList({ poems, onNewPoem }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const activePoemId = location.pathname.startsWith("/poems/")
+    ? location.pathname.split("/poems/")[1]
+    : null;
   return (
     <div
       style={{
@@ -15,7 +22,7 @@ function PoemList({ poems, activePoemId, onSelectPoem, onNewPoem }) {
         {poems.map((poem) => (
           <li
             key={poem.id}
-            onClick={() => onSelectPoem(poem.id)}
+            onClick={() => navigate(`/poems/${poem.id}`)}
             style={{
               cursor: "pointer",
               fontWeight: poem.id === activePoemId ? "bold" : "normal",
