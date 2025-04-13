@@ -36,6 +36,8 @@ function WordBoard({ words }) {
       {words.map((word, index) => (
         <DraggableWord key={index} id={`word-${index}`} word={word.text} />
       ))}
+      {/* ➖ Always draggable Line Break */}
+      <DraggableWord key={words.length} id="line-break" word="➖ Line Break" />
     </div>
   );
 }

@@ -27,7 +27,7 @@ def get_poem(poem_id: str):
 
         words = session.exec(select(Word).where(Word.poem_id == poem_id)).all()
         available_words = [WordOut(id=w.id, text=w.text, kind=w.kind) for w in words if w.kind == "available"]
-        poem_words = [WordOut(id=w.id, text=w.text, kind=w.kind) for w in words if w.kind == "poem"]
+        poem_words = [WordOut(id=w.id, text=w.text, kind=w.kind) for w in words if w.kind in ("poem", "newline")]
 
         return PoemOut(
             id=poem.id,

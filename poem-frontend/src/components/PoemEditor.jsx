@@ -73,7 +73,24 @@ function PoemEditor({ poem, onUpdatePoem }) {
     const { active, over } = event;
     if (!over) return;
 
-    if (over.id === "poem-canvas") {
+    if (active.id === "line-break" && over.id === "poem-canvas") {
+      // Insert a new line break
+      const newWord = {
+        id: nanoid(),
+        text: "⏎",
+        kind: "newline",
+      };
+
+      const updatedWords = [...poem.words, newWord];
+
+      const updatedPoem = {
+        ...poem,
+        words: updatedWords,
+        updated_at: new Date().toISOString(),
+      };
+
+      onUpdatePoem(updatedPoem);
+    } else if (over.id === "poem-canvas") {
       // Dragging from WordBoard to PoemCanvas
       const index = parseInt(active.id.split("-")[1], 10);
       const word = poem.available_words[index];

@@ -6,6 +6,7 @@ from uuid import uuid4
 class WordKind(str, Enum):
     available = "available"
     poem = "poem"
+    newline = "newline"
 
 class Word(SQLModel, table=True):
     id: str = Field(default_factory=lambda: str(uuid4()), primary_key=True)
