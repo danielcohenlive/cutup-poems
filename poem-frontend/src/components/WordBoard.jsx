@@ -1,6 +1,6 @@
 import { useDraggable } from "@dnd-kit/core";
 
-function DraggableWord({ word, id }) {
+function DraggableWord({ text, id, onDoubleClick }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
   });
@@ -17,13 +17,19 @@ function DraggableWord({ word, id }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
-      {word}
+    <div
+      ref={setNodeRef}
+      style={style}
+      onDoubleClick={onDoubleClick}
+      {...listeners}
+      {...attributes}
+    >
+      {text}
     </div>
   );
 }
 
-function WordBoard({ words }) {
+function WordBoard({ words, onWordDoubleClick }) {
   return (
     <div
       style={{
@@ -34,10 +40,20 @@ function WordBoard({ words }) {
       }}
     >
       {words.map((word, index) => (
-        <DraggableWord key={index} id={`word-${index}`} word={word.text} />
+        <DraggableWord
+          key={index}
+          id={word.id}
+          text={word.text}
+          onDoubleClick={() => onWordDoubleClick(word)}
+        />
       ))}
       {/* ➖ Always draggable Line Break */}
-      <DraggableWord key={words.length} id="line-break" word="➖ Line Break" />
+      <DraggableWord
+        key={words.length}
+        id="line-break"
+        word="➖ Line Break"
+        onDoubleClick={() => onWordDoubleClick({ id: "line-break" })}
+      />
     </div>
   );
 }

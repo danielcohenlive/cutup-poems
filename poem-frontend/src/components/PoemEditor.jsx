@@ -70,7 +70,33 @@ function PoemEditor({ poem, onUpdatePoem }) {
     const { active, over } = event;
     if (!over) return;
 
-    if (active.id === "line-break" && over.id === "poem-canvas") {
+    if (over.id === "poem-canvas") {
+      moveWordToPoem(active);
+    } else if (
+      poem.words.find((w) => w.id === active.id) &&
+      poem.words.find((w) => w.id === over.id)
+    ) {
+      // Reordering inside PoemCanvas
+      const oldIndex = poem.words.findIndex((w) => w.id === active.id);
+      const newIndex = poem.words.findIndex((w) => w.id === over.id);
+
+      if (oldIndex !== newIndex) {
+        onUpdatePoem({
+          ...poem,
+          words: arrayMove(poem.words, oldIndex, newIndex),
+          updated_at: new Date().toISOString(),
+        });
+      }
+    }
+  }
+
+  function handleWordBankDoubleClick(word) {
+    moveWordToPoem(word);
+  }
+
+  function moveWordToPoem(word) {
+    console.log(word);
+    if (word.id === "line-break") {
       // Insert a new line break
       const newWord = {
         id: nanoid(),
@@ -87,32 +113,19 @@ function PoemEditor({ poem, onUpdatePoem }) {
       };
 
       onUpdatePoem(updatedPoem);
-    } else if (over.id === "poem-canvas") {
-      // Dragging from WordBoard to PoemCanvas
-      const index = parseInt(active.id.split("-")[1], 10);
-      const word = poem.available_words[index];
-
+    } else {
+      // Double click will have the full word object, drag will only have the id
+      word = word.text
+        ? word
+        : poem.available_words.find((w) => w.id === word.id);
       onUpdatePoem({
         ...poem,
-        available_words: poem.available_words.filter((_, idx) => idx !== index),
+        available_words: poem.available_words.filter(
+          (w, _) => w.id !== word.id
+        ),
         words: [...poem.words, { id: nanoid(), text: word.text, kind: "poem" }],
         updated_at: new Date().toISOString(),
       });
-    } else if (
-      poem.words.find((w) => w.id === active.id) &&
-      poem.words.find((w) => w.id === over.id)
-    ) {
-      // Reordering inside PoemCanvas
-      const oldIndex = poem.words.findIndex((w) => w.id === active.id);
-      const newIndex = poem.words.findIndex((w) => w.id === over.id);
-
-      if (oldIndex !== newIndex) {
-        onUpdatePoem({
-          ...poem,
-          words: arrayMove(poem.words, oldIndex, newIndex),
-          updated_at: new Date().toISOString(),
-        });
-      }
     }
   }
 
@@ -150,7 +163,10 @@ function PoemEditor({ poem, onUpdatePoem }) {
       <TextUploader onWordsGenerated={handleWordsGenerated} />
 
       <h2>Word Bank</h2>
-      <WordBoard words={poem.available_words} />
+      <WordBoard
+        words={poem.available_words}
+        onWordDoubleClick={handleWordBankDoubleClick}
+      />
 
       <h2>Your Poem</h2>
       <PoemCanvas poemWords={poem.words} />
