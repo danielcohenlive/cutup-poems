@@ -7,5 +7,6 @@ export default defineConfig({
   test: {
     environment: "jsdom", // 🔥 needed for React DOM testing
     setupFiles: "./src/setupTests.js",
+    globals: true,
   },
 });

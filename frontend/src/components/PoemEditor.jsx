@@ -93,9 +93,23 @@ function PoemEditor({ poem, onUpdatePoem }) {
   function handleWordBankDoubleClick(word) {
     moveWordToPoem(word);
   }
+  function handlePoemWordDoubleClick(word) {
+    const availableWords =
+      word.kind === "poem"
+        ? [
+            ...poem.available_words,
+            { id: word.id, text: word.text, kind: "available" },
+          ]
+        : poem.available_words;
+    onUpdatePoem({
+      ...poem,
+      available_words: availableWords,
+      words: poem.words.filter((w) => w.id !== word.id),
+      updated_at: new Date().toISOString(),
+    });
+  }
 
   function moveWordToPoem(word) {
-    console.log(word);
     if (word.id === "line-break") {
       // Insert a new line break
       const newWord = {
@@ -123,7 +137,7 @@ function PoemEditor({ poem, onUpdatePoem }) {
         available_words: poem.available_words.filter(
           (w, _) => w.id !== word.id
         ),
-        words: [...poem.words, { id: nanoid(), text: word.text, kind: "poem" }],
+        words: [...poem.words, { id: word.id, text: word.text, kind: "poem" }],
         updated_at: new Date().toISOString(),
       });
     }
@@ -171,7 +185,10 @@ function PoemEditor({ poem, onUpdatePoem }) {
       />
 
       <h2>Your Poem</h2>
-      <PoemCanvas poemWords={poem.words} />
+      <PoemCanvas
+        poemWords={poem.words}
+        onWordDoubleClick={handlePoemWordDoubleClick}
+      />
     </DndContext>
   );
 }

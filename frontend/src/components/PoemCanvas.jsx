@@ -3,7 +3,7 @@ import { useDroppable } from "@dnd-kit/core";
 import { SortableContext, arrayMove, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-function SortableWord({ id, word, isLineBreak }) {
+function SortableWord({ id, word, isLineBreak, onDoubleClick }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
 
@@ -21,13 +21,19 @@ function SortableWord({ id, word, isLineBreak }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
+      onDoubleClick={onDoubleClick}
+    >
       {word}
     </div>
   );
 }
 
-function PoemCanvas({ poemWords }) {
+function PoemCanvas({ poemWords, onWordDoubleClick }) {
   const { setNodeRef } = useDroppable({
     id: "poem-canvas",
   });
@@ -52,6 +58,7 @@ function PoemCanvas({ poemWords }) {
               id={word.id}
               word={word.text}
               isLineBreak={word.kind == "newline"}
+              onDoubleClick={() => onWordDoubleClick(word)}
             />
           ))}
         </SortableContext>
