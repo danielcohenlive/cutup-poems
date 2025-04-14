@@ -3,7 +3,7 @@ import { useState, useEffect } from "react"; // Manage local state and side effe
 import PoemEditor from "./PoemEditor";
 import { fetchPoem, updatePoem } from "../api/poems"; // Fetch poem data from the API
 
-function PoemEditorWrapper() {
+function PoemEditorWrapper({ onUpdatePoem }) {
   const { poemId } = useParams();
   const [poem, setPoem] = useState(null);
 
@@ -20,6 +20,7 @@ function PoemEditorWrapper() {
   async function handleUpdatePoem(updatedPoem) {
     await updatePoem(updatedPoem.id, updatedPoem);
     setPoem(updatedPoem);
+    onUpdatePoem(updatedPoem);
   }
 
   return (

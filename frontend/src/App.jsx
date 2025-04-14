@@ -33,13 +33,22 @@ function App() {
     setPoems((prev) => [...prev, savedPoem]);
   }
 
+  function handleUpdatePoem(updatedPoem) {
+    setPoems((prev) =>
+      prev.map((poem) => (poem.id === updatedPoem.id ? updatedPoem : poem))
+    );
+  }
+
   return (
     <Router>
       <div style={{ display: "flex" }}>
         <PoemList poems={poems} onNewPoem={handleNewPoem} />
         <div style={{ flex: 1, padding: "2rem" }}>
           <Routes>
-            <Route path="/poems/:poemId" element={<PoemEditorWrapper />} />
+            <Route
+              path="/poems/:poemId"
+              element={<PoemEditorWrapper onUpdatePoem={handleUpdatePoem} />}
+            />
             <Route path="/" element={<h1>Select a poem to edit</h1>} />
           </Routes>
         </div>

@@ -134,6 +134,7 @@ function PoemEditor({ poem, onUpdatePoem }) {
       {isEditingTitle ? (
         <input
           type="text"
+          data-testid="poem-title-input"
           value={tempTitle}
           onChange={handleTitleChange}
           onBlur={handleTitleBlur}
@@ -154,6 +155,7 @@ function PoemEditor({ poem, onUpdatePoem }) {
             fontSize: "2rem",
             marginBottom: "1rem",
           }}
+          data-testid="poem-title"
           title="Click to rename poem"
         >
           {poem.name}

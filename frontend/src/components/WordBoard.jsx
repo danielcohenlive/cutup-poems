@@ -51,7 +51,7 @@ function WordBoard({ words, onWordDoubleClick }) {
       <DraggableWord
         key={words.length}
         id="line-break"
-        word="➖ Line Break"
+        text="— Line Break"
         onDoubleClick={() => onWordDoubleClick({ id: "line-break" })}
       />
     </div>

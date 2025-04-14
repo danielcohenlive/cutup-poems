@@ -13,6 +13,7 @@ function PoemList({ poems, onNewPoem }) {
         borderRight: "1px solid lightgray",
         padding: "1rem",
       }}
+      data-testid="poem-list"
     >
       <h3>Poems</h3>
       <button onClick={onNewPoem} style={{ marginBottom: "1rem" }}>

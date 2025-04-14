@@ -22,7 +22,7 @@ $ python3 -m venv .venv
 $ source .venv/bin/activate
 $ pip install -r requirements.txt
 
-$ cd ../frontend # rename me
+$ cd ../frontend
 $ npm install
 ```
 
@@ -38,6 +38,15 @@ $ fastapi dev main.py
 For the frontend
 
 ```
-$ cd frontend # rename me
+$ cd frontend
 $ npm run dev
+```
+
+## Testing
+
+For the frontend
+
+```
+$ cd frontend
+$ npx vitest
 ```
