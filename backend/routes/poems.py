@@ -1,19 +1,17 @@
 # backend/routes/poems.py
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import delete
 from sqlmodel import Session, select
 from models.poem import Poem, PoemSummary, PoemOut
+from models.users import User
 from models.word import Word, WordOut
 from database import engine
+from auth import current_active_user
 
 router = APIRouter()
 
-def get_session():
-    with Session(engine) as session:
-        yield session
-
 @router.get("/poems/", response_model=list[PoemSummary])
-def list_poems():
+def list_poems(user: User = Depends(current_active_user)):
     with Session(engine) as session:
         poems = session.exec(select(Poem)).all()
         return poems

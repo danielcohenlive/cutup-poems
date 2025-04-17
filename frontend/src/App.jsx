@@ -1,6 +1,6 @@
 // src/App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-
+import { AuthProvider } from "./context/AuthContext";
 import { useState, useEffect } from "react";
 import { nanoid } from "nanoid";
 import { fetchPoems, createPoem } from "./api/poems";
@@ -40,20 +40,22 @@ function App() {
   }
 
   return (
-    <Router>
-      <div style={{ display: "flex" }}>
-        <PoemList poems={poems} onNewPoem={handleNewPoem} />
-        <div style={{ flex: 1, padding: "2rem" }}>
-          <Routes>
-            <Route
-              path="/poems/:poemId"
-              element={<PoemEditorWrapper onUpdatePoem={handleUpdatePoem} />}
-            />
-            <Route path="/" element={<h1>Select a poem to edit</h1>} />
-          </Routes>
+    <AuthProvider>
+      <Router>
+        <div style={{ display: "flex" }}>
+          <PoemList poems={poems} onNewPoem={handleNewPoem} />
+          <div style={{ flex: 1, padding: "2rem" }}>
+            <Routes>
+              <Route
+                path="/poems/:poemId"
+                element={<PoemEditorWrapper onUpdatePoem={handleUpdatePoem} />}
+              />
+              <Route path="/" element={<h1>Select a poem to edit</h1>} />
+            </Routes>
+          </div>
         </div>
-      </div>
-    </Router>
+      </Router>
+    </AuthProvider>
   );
 }
 

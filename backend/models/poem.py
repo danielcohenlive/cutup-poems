@@ -10,6 +10,7 @@ class Poem(SQLModel, table=True):
     name: str
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    user_id: Optional[str] = Field(default=None)
 
 class PoemSummary(SQLModel):
     id: str
